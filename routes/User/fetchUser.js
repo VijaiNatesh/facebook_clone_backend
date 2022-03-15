@@ -22,7 +22,7 @@ fetchUser.get('/:user_id', async (req, res) => {
 fetchUser.get('/recommanded_users/:userId', async (req, res) => {
 
     try {
-        const users = await User.find().where('_id').ne(req.params.userId).populate('friends', '', User)
+        const users = await User.find().where('_id').ne(req.params.userId)
         console.log(users)
         const usersData = users.map((user) => {
             return FilterUserData(user)
