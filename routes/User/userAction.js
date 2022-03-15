@@ -25,7 +25,7 @@ userAction.get('/friend_request/:userId/send', async (req, res) => {
         }
 
         const friendRequest = await FriendRequest.findOne({
-            sender: userId,
+            sender: `${userId}`,
             receiver: req.params.userId,
         })
 
