@@ -73,7 +73,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
     }
 })
 
-userAction.get('/friend_request/:requestId/accept', async (req, res) => {
+userAction.post('/friend_request/:requestId/accept', async (req, res) => {
     const { userId } = req.body;
     try {
         const friendsRequest = await FriendRequest.findById(req.params.requestId)
