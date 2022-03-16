@@ -74,9 +74,8 @@ fetchUser.get('/friend_request/received/:userId', async (req, res) => {
     try {
         const friends = await FriendRequest.find({
             $and: [{ isAccepted: false }, { receiver: req.params.userId }],
-        }).populate('sender', '_id name profile_pic active', User)
-
-       
+        }).populate('sender', '_id name profile_pic active', User)      
+             
         res.status(200).json({ friends: friends })
     } catch (err) {
         console.log(err)
