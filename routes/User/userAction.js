@@ -7,14 +7,14 @@ const filterUserData = require('../../utils/filterUserData')
 const CreateNotification = require('../../utils/createNotification')
 
 userAction.get('/friend_request/:userId/send', async (req, res) => {
-    
+    const {userId} = req.body
     try {
         const user = await User.findById(req.params.userId)
         if (!user) {
             return res.status(404).json({ error: 'User not found' })
         }
 
-        if (req.userId == req.params.userId) {
+        if (userId == req.params.userId) {
             return res
                 .status(400)
                 .json({ error: 'You cannot send friend request to yourself' })
@@ -25,7 +25,7 @@ userAction.get('/friend_request/:userId/send', async (req, res) => {
         }
 
         const friendRequest = await FriendRequest.findOne({
-            sender: req.userId,
+            sender: userId,
             receiver: req.params.userId,
         })
 
@@ -34,7 +34,7 @@ userAction.get('/friend_request/:userId/send', async (req, res) => {
         }
 
         const newFriendRequest = new FriendRequest({
-            sender: req.userId,
+            sender: userId,
             receiver: req.params.userId,
         })
 
