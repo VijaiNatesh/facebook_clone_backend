@@ -21,7 +21,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
         }
 
         if (user.friends.includes(userId)) {
-            return res.send('Already Friends')
+            return res.status(400).json({ error: 'Already Friends' })
         }
 
         const friendRequest = await FriendRequest.findOne({
