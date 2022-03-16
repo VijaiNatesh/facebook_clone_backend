@@ -76,14 +76,8 @@ fetchUser.get('/friend_request/received/:userId', async (req, res) => {
             $and: [{ isAccepted: false }, { receiver: req.params.userId }],
         }).populate('sender', '_id name profile_pic active', User)
 
-        const friendsData = friends.map((friend) => {
-            return {
-                id: friend.id,
-                user: FilterUserData(friend.sender),
-            }
-        })
-
-        res.status(200).json({ friends: friendsData })
+       
+        res.status(200).json({ friends: friends })
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
@@ -109,19 +103,19 @@ fetchUser.get('/friend_request/sended/:userId', async (req, res) => {
     }
 })
 
-fetchUser.get('/search', async(req, res) => {
+fetchUser.get('/search', async (req, res) => {
     try {
         const users = await User.find({
-          name: { $regex: req.query.name, $options: 'i' },
+            name: { $regex: req.query.name, $options: 'i' },
         }).populate("friends")
-    
+
         const usersData = users.map((user) => FilterUserData(user))
-    
+
         res.status(200).json({ users: usersData })
-      } catch (err) {
+    } catch (err) {
         console.log(err)
-        return res.status(500).json({error:"Something went wrong"})
-      }
+        return res.status(500).json({ error: "Something went wrong" })
+    }
 })
 
 module.exports = fetchUser
