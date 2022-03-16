@@ -7,7 +7,7 @@ const filterUserData = require('../../utils/filterUserData')
 const CreateNotification = require('../../utils/createNotification')
 
 userAction.post('/friend_request/:userId/send', async (req, res) => {
-    const { userId } = req.body
+    const {userId} = req.body
     try {
         const user = await User.findById(req.params.userId)
         if (!user) {
@@ -21,7 +21,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
         }
 
         if (user.friends.includes(userId)) {
-            return res.send('Already Friends')
+            return res.status(400).json({ message: 'Already Friends' })
         }
 
         const friendRequest = await FriendRequest.findOne({
@@ -62,10 +62,10 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
         }
         if (user.socketId) {
             req.io
-                .to(user.socketId)
-                .emit('friend-request-status', { sender: senderData })
+              .to(user.socketId)
+              .emit('friend-request-status', { sender: senderData })
             req.io.to(user.socketId).emit('Notification', { data: notification })
-        }
+          }
     }
     catch (err) {
         console.log(err)
@@ -109,12 +109,12 @@ userAction.post('/friend_request/:requestId/accept', async (req, res) => {
             body: `${currentUser.name} has accepted your friend request`,
         })
         if (sender.socketId) {
-            let currentUserData = FilterUserData(currentUser)
-            req.io.to(sender.socketId).emit('friend-request-accept-status', {
-                user: currentUserData,
-                request_id: req.params.requestId,
-            })
-            req.io.to(sender.socketId).emit('Notification', { data: notification })
+          let currentUserData = FilterUserData(currentUser)
+          req.io.to(sender.socketId).emit('friend-request-accept-status', {
+            user: currentUserData,
+            request_id: req.params.requestId,
+          })
+          req.io.to(sender.socketId).emit('Notification', { data: notification })
         }
     } catch (err) {
         console.log(err)
@@ -198,69 +198,69 @@ userAction.put('/profile_pic/update', async (req, res) => {
     }
 })
 
-userAction.put('/cover_pic/update', async (req, res) => {
+userAction.put('/cover_pic/update', async(req, res) => {
     const { cover_url, userId } = req.body
     try {
-        const user = await User.findById(userId)
-        user.cover_image = cover_url
-        await user.save()
-
-        const getUser = await User.findById(userId).populate('friends')
-        const userData = filterUserData(getUser)
-
-        const friends = getUser.friends.map((friend) => {
-            return {
-                ...filterUserData(friend),
-            }
-        })
-
-        userData.friends = friends
-        res.status(200).json({ message: 'Cover image updated', user: userData })
+      const user = await User.findById(userId)
+      user.cover_image = cover_url
+      await user.save()
+  
+      const getUser = await User.findById(userId).populate('friends')
+      const userData = filterUserData(getUser)
+  
+      const friends = getUser.friends.map((friend) => {
+        return {
+          ...filterUserData(friend),
+        }
+      })
+  
+      userData.friends = friends
+      res.status(200).json({ message: 'Cover image updated', user: userData })
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
+      console.log(err)
+      return res.status(500).json({error:"Something went wrong"})
     }
 })
 
-userAction.put('/update_profile/:input', async (req, res) => {
-    const { name, email, bio, location, education, userId } = req.body
+userAction.put('/update_profile/:input', async(req, res) => {
+    const {name, email, bio, location, education, userId} = req.body
     try {
         const user = await User.findById(userId)
-
+    
         if (req.params.input === 'name') {
-            user.name = name
+          user.name = name
         }
         if (req.params.input === 'email') {
-            user.email = email
+          user.email = email
         }
-
+    
         if (req.params.input === 'bio') {
-            user.bio = bio
+          user.bio = bio
         }
         if (req.params.input === 'location') {
-            user.location = location
+          user.location = location
         }
         if (req.params.input === 'education') {
-            user.education = education
+          user.education = education
         }
-
+    
         await user.save()
         res.status(200).json({ message: 'Updated Successfully' })
-    } catch (err) {
+      } catch (err) {
         console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
-    }
+        return res.status(500).json({error:"Something went wrong"})
+      }
 })
 
-userAction.delete('/notifications/clear', async (req, res) => {
-    const { userId } = req.body;
+userAction.delete('/notifications/clear', async(req, res) => {
+    const {userId} =  req.body;
     try {
         await Notification.deleteMany({ user: userId })
         res.status(200).json({ message: 'Notification Cleared Successfully' })
-    } catch (err) {
+      } catch (err) {
         console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
-    }
+        return res.status(500).json({error:"Something went wrong"})
+      }
 })
 
 module.exports = userAction
