@@ -6,7 +6,7 @@ const Notification = require('../../models/Notification')
 const filterUserData = require('../../utils/filterUserData')
 const CreateNotification = require('../../utils/createNotification')
 
-userAction.get('/friend_request/:userId/send', async (req, res) => {
+userAction.post('/friend_request/:userId/send', async (req, res) => {
     const {userId} = req.body
     try {
         const user = await User.findById(req.params.userId)
