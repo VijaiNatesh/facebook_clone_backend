@@ -157,18 +157,18 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
         if (!friendsRequest) {
             return res
                 .status(404)
-                .json({ error: 'Request already declined or not sended yet' })
+                .json({ message: 'Request already declined or not sended yet' })
         }
         await FriendRequest.deleteOne({ _id: req.params.requestId })
 
         res.status(200).json({ message: 'Friend Request Declined' })
-        // if (friendsRequest.sender.socketId) {
-        //     req.io
-        //         .to(friendsRequest.sender.socketId)
-        //         .emit('received-friend-request-decline', {
-        //             requestId: req.params.requestId,
-        //         })
-        // }
+        if (friendsRequest.sender.socketId) {
+            req.io
+                .to(friendsRequest.sender.socketId)
+                .emit('received-friend-request-decline', {
+                    requestId: req.params.requestId,
+                })
+        }
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
