@@ -80,19 +80,19 @@ userAction.post('/friend_request/:requestId/accept', async (req, res) => {
         if (!friendsRequest) {
             return res
                 .status(404)
-                .json({ error: 'Request already accepted or not sended yet' })
+                .json({ message: 'Request already accepted or not sended yet' })
         }
 
         const sender = await User.findById(friendsRequest.sender)
         if (sender.friends.includes(friendsRequest.receiver)) {
-            return res.status(400).json({ error: 'already in your friend lists' })
+            return res.status(400).json({ message: 'already in your friend lists' })
         }
         sender.friends.push(userId)
         await sender.save()
 
         const currentUser = await User.findById(userId)
         if (currentUser.friends.includes(friendsRequest.sender)) {
-            return res.status(400).json({ error: 'already  friend ' })
+            return res.status(400).json({ message: 'already  friend ' })
         }
         currentUser.friends.push(friendsRequest.sender)
         await currentUser.save()
@@ -118,7 +118,7 @@ userAction.post('/friend_request/:requestId/accept', async (req, res) => {
         }
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
+        return res.status(500).json({ message: "Something went wrong" })
     }
 })
 
@@ -131,7 +131,7 @@ userAction.post('/friend_request/cancel', async (req, res) => {
         if (!friendsRequest) {
             return res
                 .status(404)
-                .json({ error: 'Request already cenceled or not sended yet' })
+                .json({ message: 'Request already cenceled or not sended yet' })
         }
         await FriendRequest.deleteOne({ _id: requestId })
 
@@ -145,7 +145,7 @@ userAction.post('/friend_request/cancel', async (req, res) => {
         }
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
+        return res.status(500).json({ message: "Something went wrong" })
     }
 })
 
