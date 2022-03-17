@@ -11,13 +11,13 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId)
         if (!user) {
-            return res.status(404).json({ error: 'User not found' })
+            return res.status(404).json({ message: 'User not found' })
         }
 
         if (userId == req.params.userId) {
             return res
                 .status(400)
-                .json({ error: 'You cannot send friend request to yourself' })
+                .json({ message: 'You cannot send friend request to yourself' })
         }
 
         if (user.friends.includes(userId)) {
@@ -30,7 +30,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
         })
 
         if (friendRequest) {
-            return res.status(400).json({ error: 'Friend Request already send' })
+            return res.status(400).json({ message: 'Friend Request already send' })
         }
 
         const newFriendRequest = new FriendRequest({
@@ -69,7 +69,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        return res.status(500).json({ error: "Something went wrong" })
+        return res.status(500).json({ message: "Something went wrong" })
     }
 })
 
