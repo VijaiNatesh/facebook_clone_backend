@@ -60,12 +60,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
             id: sender.id,
             user: filterUserData(sender.sender),
         }
-        if (user.socketId) {
-            req.io
-                .to(user.socketId)
-                .emit('friend-request-status', { sender: senderData })
-            req.io.to(user.socketId).emit('Notification', { data: notification })
-        }
+      
     }
     catch (err) {
         console.log(err)
@@ -108,14 +103,7 @@ userAction.post('/friend_request/:requestId/accept', async (req, res) => {
             user: sender.id,
             body: `${currentUser.name} has accepted your friend request`,
         })
-        if (sender.socketId) {
-            let currentUserData = FilterUserData(currentUser)
-            req.io.to(sender.socketId).emit('friend-request-accept-status', {
-                user: currentUserData,
-                request_id: req.params.requestId,
-            })
-            req.io.to(sender.socketId).emit('Notification', { data: notification })
-        }
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "Something went wrong" })
@@ -136,13 +124,8 @@ userAction.post('/friend_request/cancel', async (req, res) => {
         await FriendRequest.deleteOne({ _id: requestId })
 
         res.status(200).json({ message: 'Friend Request Canceled' })
-        if (friendsRequest.receiver.socketId) {
-            req.io
-                .to(friendsRequest.receiver.socketId)
-                .emit('sended-friend-request-cancel', {
-                    requestId: requestId,
-                })
-        }
+        
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "Something went wrong" })
@@ -162,13 +145,7 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
         await FriendRequest.deleteOne({ _id: req.params.requestId })
 
         res.status(200).json({ message: 'Friend Request Declined' })
-        if (friendsRequest.sender.socketId) {
-            req.io
-                .to(friendsRequest.sender.socketId)
-                .emit('received-friend-request-decline', {
-                    requestId: req.params.requestId,
-                })
-        }
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })

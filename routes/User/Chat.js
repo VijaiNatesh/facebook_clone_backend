@@ -40,11 +40,7 @@ chatRoute.post('/:friendId/send', async (req, res) => {
             createdAt: getChat.createdAt,
         }
         res.status(201).json({ data: chatdata })
-        // if (getChat.receiver.socketId) {
-        //   req.io
-        //     .to(getChat.receiver.socketId)
-        //     .emit('new-message', { data: chatdata })
-        // }
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
@@ -76,11 +72,7 @@ chatRoute.get('/:friendId/get_messages', async (req, res) => {
         })
 
         res.status(200).json({ data: messagesData })
-        if (getChat.receiver.socketId) {
-            req.io
-                .to(getChat.receiver.socketId)
-                .emit('new-message', { data: chatdata })
-        }
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
