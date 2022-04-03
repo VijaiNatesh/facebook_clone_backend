@@ -1,4 +1,5 @@
 const express = require('express')
+const multer = require('multer')
 const userAction = express.Router()
 const User = require('../../models/User')
 const FriendRequest = require('../../models/FriendRequest')
@@ -151,12 +152,22 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
         return res.status(500).json({ error: "Something went wrong" })
     }
 })
+// storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  })
+    const upload = multer({ storage: storage })
 
-userAction.put('/profile_pic/update', async (req, res) => {
-    const { profile_url, userId } = req.body
+    userAction.put('/profile_pic/update', upload.single("profileImage"), async (req, res) => {
+    const { userId } = req.body
     try {
         const user = await User.findById(userId)
-        user.profile_pic = profile_url
+        user.profile_url = req.file.originalname   
         await user.save()
 
         const getUser = await User.findById(userId).populate('friends')
