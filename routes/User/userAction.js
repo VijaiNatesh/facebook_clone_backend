@@ -170,7 +170,7 @@ userAction.put('/profile_pic/update', async (req, res) => {
         const user = await User.findById(userId)
         user.profile_url = {
             data: file.data,
-            contentType: 'image/png'
+            contentType: file.mimetype
         }
         await user.save()
 
