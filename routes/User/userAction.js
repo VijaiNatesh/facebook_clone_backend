@@ -61,7 +61,7 @@ userAction.post('/friend_request/:userId/send', async (req, res) => {
             id: sender.id,
             user: filterUserData(sender.sender),
         }
-      
+
     }
     catch (err) {
         console.log(err)
@@ -104,7 +104,7 @@ userAction.post('/friend_request/:requestId/accept', async (req, res) => {
             user: sender.id,
             body: `${currentUser.name} has accepted your friend request`,
         })
-        
+
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "Something went wrong" })
@@ -125,8 +125,8 @@ userAction.post('/friend_request/cancel', async (req, res) => {
         await FriendRequest.deleteOne({ _id: requestId })
 
         res.status(200).json({ message: 'Friend Request Canceled' })
-        
-        
+
+
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: "Something went wrong" })
@@ -146,7 +146,7 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
         await FriendRequest.deleteOne({ _id: req.params.requestId })
 
         res.status(200).json({ message: 'Friend Request Declined' })
-        
+
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
@@ -155,19 +155,22 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
 // storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/uploads')
+        cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-      cb(null, file.originalname)
+        cb(null, file.fieldname + '-' + Date.now())
     }
-  })
-    const upload = multer({ storage: storage })
+})
+const upload = multer({ storage: storage })
 
-    userAction.put('/profile_pic/update', upload.single("profileImage"), async (req, res) => {
+userAction.put('/profile_pic/update', upload.single("profileImage"), async (req, res) => {
     const { userId } = req.body
     try {
         const user = await User.findById(userId)
-        user.profile_url = req.file.originalname   
+        user.profile_url = {
+            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            contentType: 'image/png'
+        }
         await user.save()
 
         const getUser = await User.findById(userId).populate('friends')
