@@ -153,22 +153,23 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
     }
 })
 // storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-const upload = multer({ storage: storage })
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.fieldname + '-' + Date.now())
+//     }
+// })
+// const upload = multer({ storage: storage })
 
-userAction.put('/profile_pic/update', upload.single("profileImage"), async (req, res) => {
+userAction.put('/profile_pic/update', async (req, res) => {
     const { userId } = req.body
+    const {file} = req.files
     try {
         const user = await User.findById(userId)
         user.profile_url = {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            data: file.data,
             contentType: 'image/png'
         }
         await user.save()
