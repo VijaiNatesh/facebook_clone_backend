@@ -2,7 +2,6 @@ const express = require('express')
 const multer = require('multer')
 const userAction = express.Router()
 const User = require('../../models/User')
-const Profile = require('../../models/Profile')
 const FriendRequest = require('../../models/FriendRequest')
 const Notification = require('../../models/Notification')
 const filterUserData = require('../../utils/filterUserData')
@@ -172,47 +171,31 @@ const fileFilter = (req, file, cb) => {
 }
 const upload = multer({ storage, fileFilter })
 
-// userAction.post('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
-//     const userId  = req.body.userId;
-//     const profile_pic = req.file.filename;
-//     try {
-//         const user = await User.findById(userId)
-//         user.profile_pic = profile_pic;
-//         await user.save()
-
-//         const getUser = await User.findById(userId).populate('friends')
-//         const userData = filterUserData(getUser)
-
-//         const friends = getUser.friends.map((friend) => {
-//             return {
-//                 ...filterUserData(friend),
-//             }
-//         })
-//         userData.friends = friends
-//         res.status(200).json({ message: 'profile image updated', user: userData })
-//     } catch (err) {
-//         console.log(err)
-//         return res.status(500).json({ error: "Something went wrong" })
-//     }
-// })
-
-userAction.post('/profile_pic', upload.single('profileImage'), async(req, res) => {
-    const {user} = req.body.user;    
+userAction.post('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
+    const userId  = req.body.userId;
     const profile_pic = req.file.filename;
-    try{
-        const new_profile_pic = {
-            userId,
-            profile_pic
-        }
-        const profile_picture = new Profile(new_profile_pic)
-        profile_picture.save()
-        
-        res.send("Profile Picture Uploaded")
-    }
-    catch(error){
-        console.log(error)
+    try {
+        const user = await User.findById(userId)
+        user.profile_pic = profile_pic;
+        await user.save()
+
+        const getUser = await User.findById(userId).populate('friends')
+        const userData = filterUserData(getUser)
+
+        const friends = getUser.friends.map((friend) => {
+            return {
+                ...filterUserData(friend),
+            }
+        })
+        userData.friends = friends
+        res.status(200).json({ message: 'profile image updated', user: userData })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ error: "Something went wrong" })
     }
 })
+
+
 
 userAction.put('/cover_pic/update', async (req, res) => {
     const { cover_url, userId } = req.body
