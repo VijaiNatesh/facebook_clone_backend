@@ -158,7 +158,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
+        cb(null, file.originalname + '-' + Date.now())
     }
 })
 const fileFilter = (req, file, cb) => {
@@ -187,7 +187,6 @@ userAction.put('/profile_pic/update', upload.single('profileImage'), async (req,
                 ...filterUserData(friend),
             }
         })
-
         userData.friends = friends
         res.status(200).json({ message: 'profile image updated', user: userData })
     } catch (err) {
