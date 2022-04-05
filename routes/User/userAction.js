@@ -196,7 +196,8 @@ const upload = multer({ storage, fileFilter })
 //     }
 // })
 
-userAction.post('/profile_pic', upload.single('profileImage'), async(req, res) => {    
+userAction.post('/profile_pic', upload.single('profileImage'), async(req, res) => {
+    const {user} = req.body.user;    
     const profile_pic = req.file.filename;
     try{
         const new_profile_pic = {
@@ -205,6 +206,7 @@ userAction.post('/profile_pic', upload.single('profileImage'), async(req, res) =
         }
         const profile_picture = new Profile(new_profile_pic)
         profile_picture.save()
+        
         res.send("Profile Picture Uploaded")
     }
     catch(error){
