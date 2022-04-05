@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
 const conn = mongoose.createConnection(process.env.MONGO_URL)
 
-const profileSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    },
+const profileSchema = new mongoose.Schema({    
     profile_pic: {
         type: String
     }
