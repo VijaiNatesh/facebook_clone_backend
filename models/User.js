@@ -21,8 +21,7 @@ const UserSchema = new mongoose.Schema({
     },
     
     profile_pic: {       
-        data: Buffer,
-        contentType: String        
+      type: String      
       },
   
       cover_image: {

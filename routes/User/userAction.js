@@ -153,25 +153,30 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
     }
 })
 // storage
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'uploads')
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// })
-// const upload = multer({ storage: storage })
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+})
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if(allowedFileTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+const upload = multer({ storage, fileFilter })
 
-userAction.put('/profile_pic/update', async (req, res) => {
+userAction.put('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
     const { userId } = req.body
-    const {file} = req.files
+    const profile_pic = req.file.filename;
     try {
         const user = await User.findById(userId)
-        user.profile_url = {
-            data: file.data,
-            contentType: file.mimetype
-        }
+        user.profile_pic = profile_pic;
         await user.save()
 
         const getUser = await User.findById(userId).populate('friends')
