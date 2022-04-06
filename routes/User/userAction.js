@@ -153,25 +153,25 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
     }
 })
 // storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname + '-' + Date.now())
-    }
-})
-const fileFilter = (req, file, cb) => {
-    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if(allowedFileTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-}
-const upload = multer({ storage, fileFilter })
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.originalname + '-' + Date.now())
+//     }
+// })
+// const fileFilter = (req, file, cb) => {
+//     const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+//     if(allowedFileTypes.includes(file.mimetype)) {
+//         cb(null, true);
+//     } else {
+//         cb(null, false);
+//     }
+// }
+// const upload = multer({ storage, fileFilter })
 
-userAction.put('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
+userAction.put('/profile_pic/update', async (req, res) => {
    const {profile_pic, userId} = req.body
     try {
         const user = await User.findById(userId)
