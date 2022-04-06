@@ -173,26 +173,29 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter })
 
 userAction.post('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
-    const { userId } = req.body
-    const profile_pic = {
-        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-        contentType: 'image/png'
+   
+    var obj = {
+        user: req.body.user,
+        profileImage: {
+            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+            contentType: 'image/png'
+        }
     }
     try {
-        const user = await User.findById(userId)
-        user.push(profile_pic)
-        await user.save()
+        const image = await ProfileImage.create(obj)
+       await image.save();
 
-        const getUser = await User.findById(userId).populate('friends')
-        const userData = filterUserData(getUser)
+        // const getUser = await User.findById(userId).populate('friends')
+        // const userData = filterUserData(getUser)
 
-        const friends = getUser.friends.map((friend) => {
-            return {
-                ...filterUserData(friend),
-            }
-        })
-        userData.friends = friends
-        res.status(200).json({ message: 'profile image updated', user: userData })
+        // const friends = getUser.friends.map((friend) => {
+        //     return {
+        //         ...filterUserData(friend),
+        //     }
+        // })
+        // userData.friends = friends
+        // res.status(200).json({ message: 'profile image updated', user: userData })
+        res.send("profile img uploaded")
     } catch (err) {
         console.log(err)
         return res.status(500).json({ error: "Something went wrong" })
