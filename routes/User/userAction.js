@@ -172,7 +172,8 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
 // const upload = multer({ storage, fileFilter })
 
 userAction.put('/profile_pic/update', async (req, res) => {
-   const {profile_pic, userId} = req.body
+   const {userId} = req.body
+   const {profile_pic} = req.file
     try {
         const user = await User.findById(userId)
         user.profile_pic = profile_pic;
