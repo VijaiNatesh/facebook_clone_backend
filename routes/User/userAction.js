@@ -1,5 +1,6 @@
 const express = require('express')
 const multer = require('multer')
+const fs = require('fs')
 const userAction = express.Router()
 const User = require('../../models/User')
 const FriendRequest = require('../../models/FriendRequest')
@@ -153,27 +154,30 @@ userAction.get('/friend_request/:requestId/decline', async (req, res) => {
     }
 })
 // storage
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'uploads')
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.originalname + '-' + Date.now())
-//     }
-// })
-// const fileFilter = (req, file, cb) => {
-//     const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-//     if(allowedFileTypes.includes(file.mimetype)) {
-//         cb(null, true);
-//     } else {
-//         cb(null, false);
-//     }
-// }
-// const upload = multer({ storage, fileFilter })
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname + '-' + Date.now())
+    }
+})
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedFileTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+const upload = multer({ storage, fileFilter })
 
-userAction.put('/profile_pic/update', async (req, res) => {
-   const {userId} = req.body
-   const {profile_pic} = req.file
+userAction.put('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
+    const { userId } = req.body
+    const profile_pic = {
+        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        contentType: 'image/png'
+    }
     try {
         const user = await User.findById(userId)
         user.profile_pic = profile_pic;
