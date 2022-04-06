@@ -172,7 +172,7 @@ const fileFilter = (req, file, cb) => {
 }
 const upload = multer({ storage, fileFilter })
 
-userAction.put('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
+userAction.post('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
     const { userId } = req.body
     const profile_pic = {
         data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
@@ -180,7 +180,7 @@ userAction.put('/profile_pic/update', upload.single('profileImage'), async (req,
     }
     try {
         const user = await User.findById(userId)
-        user.profile_pic = profile_pic;
+        user.push(profile_pic)
         await user.save()
 
         const getUser = await User.findById(userId).populate('friends')
