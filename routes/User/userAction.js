@@ -171,7 +171,7 @@ const fileFilter = (req, file, cb) => {
 }
 const upload = multer({ storage, fileFilter })
 
-userAction.put('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
+userAction.post('/profile_pic/update', upload.single('profileImage'), async (req, res) => {
     const userId  = req.body.userId;
     const profile_pic = req.file.filename;
     try {
